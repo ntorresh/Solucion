@@ -1,0 +1,27 @@
+PROTOCOLO I2C
+
+Universidad Nacional de Colombia
+Gabriela Ortiz
+Oscar Olaya
+Jeisson Montenegro
+
+I²C es un bus de comunicaciones en serie cuya principal característica es que utiliza dos líneas para transmitir la información: una para los datos SDA y otra para la señal de reloj SCL. Los dispositivos conectados al bus I²C tienen una dirección única para cada uno. También pueden ser maestros o esclavos. El dispositivo maestro inicia la transferencia de datos y además genera la señal de reloj, pero no es necesario que el maestro sea siempre el mismo dispositivo, lo que hace que sea un multimaestro. Habiendo varios dispositivos conectados sobre el bus, es lógico que para establecer una comunicación a través de él se deba respetar un protocolo. 
+
+La condición inicial, de bus libre, es cuando ambas señales están en estado lógico alto. En este estado cualquier dispositivo maestro puede ocuparlo, estableciendo la condición de inicio (start). Esta condición se presenta cuando un dispositivo maestro pone en estado bajo la línea de datos (SDA), pero dejando en alto la línea de reloj (SCL), El primer byte que se transmite luego de la condición de inicio contiene siete bits que componen la dirección del dispositivo que se desea seleccionar, y un octavo bit que corresponde a la operación que se quiere realizar con él (lectura o escritura).
+
+Si el dispositivo cuya dirección corresponde a la que se indica en los siete bits está presente en el bus, éste contesta con un bit en bajo, ubicado inmediatamente luego del octavo bit que ha enviado el dispositivo maestro. Este bit de reconocimiento (ACK) en bajo le indica al dispositivo maestro que el esclavo reconoce la solicitud y está en condiciones de comunicarse. Aquí se establece la comunicación se establece y comienza el intercambio de información entre ambos dispositivos.
+
+El diseño cuenta con cuatro módulos principales, el modulo principal llamado pheriferal_I2C que instancia los módulos internos llamados, módulo de registros, módulo de comando byte y un módulo de comando bit.
+
+El módulo de Registros alberga seis registros de bits que construyen la estructura interna del protocolo I2C, teniendo en cuenta que cada registro de 8 bits contiene tipo de acceso RW (Lectura-Escritura), R (Lectura) o W (Escritura). Cada uno de los registros posee una función específica para el manejo del protocolo I2C que se explican a continuación:
+
+PRER Registro de reloj pre-escala con byte alto y bajo.
+CTR Registro que activa o desactiva el núcleo.
+TXR Los datos transmitidos se almacenan en dicho registro.   
+RXR Los datos recibidos están disponibles en dicho registro.
+CR Almacena el comando para la próxima operación.
+SR Monitorea las operaciones del protocolo I2C.
+
+El módulo Byte Control contiene el registro de desplazamiento tanto para los ciclos de lectura como de escritura, durante el ciclo de lectura, la entrada al registro de desplazamiento viene de SDA, después de 8 ciclos de SCL los datos desplazados de entrada se copian en el registro de recepción, durante el ciclo de escritura, la entrada al registro de desplazamiento que viene a través del bus de datos del procesador J1, dichos datos son desplazados a la línea SDA durante la escritura.
+
+El módulo Bit Control controla directamente las líneas SCL y SDA, generando secuencias correctas para START y STOP, repitiendo START, WR, RD, cada bit se divide en cinco ciclos de reloj (reposo, A, B, C, y D), excepto para el comando START que tiene seis ciclos de reloj, así se cumple la relación lógica entre las líneas SCL y SDA. El reloj interno en marcha se utiliza para cada uno de los registros de este módulo.
