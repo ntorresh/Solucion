@@ -1,0 +1,16 @@
+## Nexys4
+
+## Clock signal
+NET "sys_clk_i"   LOC = "E3"	| IOSTANDARD = "LVCMOS33";
+NET "sys_clk_i" TNM_NET = sys_clk_pin;
+TIMESPEC TS_sys_clk_pin = PERIOD sys_clk_pin 100 MHz HIGH 50%; 
+ 
+## Buttons reset
+ NET "sys_rst_i"	LOC = "R10"	| IOSTANDARD = "LVCMOS33";
+
+NET "uart_tx"	LOC = "G14"	| IOSTANDARD = "LVCMOS33";	##JB1	
+NET "uart_rx"	LOC = "P15"	| IOSTANDARD = "LVCMOS33";	##JB2	
+
+## LEDs
+NET "led_rx"		LOC = "T8"	| IOSTANDARD = "LVCMOS33"; ##LD0
+NET "led_tx"		LOC = "V9"	| IOSTANDARD = "LVCMOS33"; ##LD1
